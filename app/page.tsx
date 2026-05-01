@@ -1,19 +1,96 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle2, Lock, Zap, BookOpen, Users, Shield, AlertCircle } from 'lucide-react'
+import { CheckCircle2, Lock, Zap, BookOpen, Users, Shield, AlertCircle, Timer } from 'lucide-react'
+
+// --- CONFIGURATION ---
+const PROXYCHECK_API_KEY = 'Lik3cING6PMbrHuHo6hPl9iRst3SmsXL';
+const AFFMINE_LOCKER_ID = '69f223bbc1f3c';
+const SUCCESS_URL = 'success.html'; // Ensure this file exists in your public folder or as a route
 
 export default function Home() {
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // 1. Load Affmine Script
+    const script = document.createElement('script');
+    script.src = `https://hubverify.com/cl/clocker.php?id=${AFFMINE_LOCKER_ID}`;
+    script.id = 'afmlock';
+    script.async = true;
+    document.head.appendChild(script);
+
+    // 2. VPN/Proxy Detection
+    const checkVPN = async () => {
+      try {
+        const response = await fetch(`https://proxycheck.io/v2/?key=${PROXYCHECK_API_KEY}&vpn=1&asn=1`);
+        const data = await response.json();
+        const userIP = Object.keys(data).find(key => key !== 'status' && key !== 'message');
+        
+        if (userIP && (data[userIP].proxy === 'yes' || data[userIP].type === 'VPN')) {
+          setIsBlocked(true);
+        }
+      } catch (error) {
+        console.error('Security check failed', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkVPN();
+
+    return () => {
+      if (document.getElementById('afmlock')) {
+        document.head.removeChild(script);
+      }
+    };
+  }, []);
+
   const handleVerifyClick = () => {
-    // This is where the Affmine locker or verification API would be called
-    console.log('[v0] Verification CTA clicked')
+    if (isBlocked) {
+      alert("Security Alert: VPN/Proxy detected. Please disable it to continue.");
+      return;
+    }
+
+    // Call Affmine Locker
+    if (typeof (window as any).call_locker === "function") {
+      (window as any).call_locker();
+    } else {
+      // Fallback if script fails to load
+      window.location.href = SUCCESS_URL;
+    }
+  };
+
+  if (isBlocked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-6 text-center">
+        <Card className="max-w-md p-8 border-destructive/50 bg-destructive/5">
+          <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+          <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
+          <p className="text-muted-foreground">
+            Our security system has detected a VPN or Proxy connection. To maintain the integrity of our platform, access is only permitted from genuine residential connections.
+          </p>
+          <Button className="mt-6" onClick={() => window.location.reload()}>Try Again Without VPN</Button>
+        </Card>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-background via-background to-secondary/5">
+      
+      {/* SCARCITY BANNER */}
+      <div className="w-full bg-accent/10 border-b border-accent/20 py-2 px-4 text-center">
+        <p className="text-xs sm:text-sm font-medium text-accent flex items-center justify-center gap-2">
+          <Timer className="h-4 w-4" />
+          Limited Access: This portal will automatically close after 500 successful downloads to maintain strategy quality.
+        </p>
+      </div>
+
       {/* HERO SECTION */}
       <section className="relative w-full border-b border-border">
         <div className="mx-auto max-w-4xl px-6 py-20 sm:py-32">
@@ -22,7 +99,7 @@ export default function Home() {
             <div className="flex items-center justify-center sm:justify-start">
               <Badge variant="outline" className="gap-2 border-border bg-secondary/30 text-foreground">
                 <Shield className="h-3 w-3" />
-                Verified & Secure
+                Verified & Secure System
               </Badge>
             </div>
 
@@ -79,7 +156,7 @@ export default function Home() {
 
             <div className="rounded-lg border border-border/50 bg-secondary/10 p-6">
               <p className="text-sm text-muted-foreground leading-relaxed">
-                <strong className="text-foreground">Important:</strong> This page uses third-party services to verify your identity and location. By proceeding, you agree to use only accurate information. Fraudulent submissions, VPN/proxy use, and location spoofing attempts violate our terms and may result in legal action.
+                <strong className="text-foreground">Important:</strong> This page uses third-party services to verify your identity and location. By proceeding, you agree to use only accurate information. Fraudulent submissions, VPN/proxy use, and location spoofing attempts violate our terms and may result in denial of access.
               </p>
             </div>
           </div>
@@ -219,66 +296,21 @@ export default function Home() {
                   VPN and proxy detection prevents fraudulent access attempts, geo-bypass schemes, and ensures compliance with geographic and regulatory requirements. We verify your real location to maintain the integrity of our verification system.
                 </AccordionContent>
               </AccordionItem>
-
-              <AccordionItem value="after-verification" className="border-border">
-                <AccordionTrigger className="text-foreground hover:text-accent">
-                  What do I receive after completion?
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  After successful verification, you&apos;ll receive immediate access to the complete digital resource. You can download, read, and reference it anytime. You&apos;ll also get a unique account dashboard to manage your access, referrals, and any available credit.
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="is-data-stored" className="border-border">
-                <AccordionTrigger className="text-foreground hover:text-accent">
-                  Is my information stored and shared?
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  Your data is handled according to our Privacy Policy. We only collect information necessary for verification and access management. We do not sell your data to third parties. Verification data is processed securely by our third-party partner under strict data protection agreements.
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="support" className="border-border">
-                <AccordionTrigger className="text-foreground hover:text-accent">
-                  What if I have issues or questions?
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  You can reach our support team through the contact form in the footer or by email. We typically respond within 24 hours. Verification issues are handled directly by our third-party partner&apos;s support team, and we&apos;ll assist in coordinating resolution.
-                </AccordionContent>
-              </AccordionItem>
             </Accordion>
           </div>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="w-full bg-secondary/20 border-t border-border">
-        <div className="mx-auto max-w-4xl px-6 py-12">
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                <strong className="text-foreground">Compliance Notice:</strong> This page facilitates access to digital resources through secure third-party verification. By accessing this resource, you confirm that you are providing accurate information and comply with all applicable terms and conditions.
-              </p>
-            </div>
-
-            <div className="grid gap-6 sm:grid-cols-3 text-sm">
-              <a href="#privacy" className="text-muted-foreground hover:text-accent transition-colors">
-                Privacy Policy
-              </a>
-              <a href="#terms" className="text-muted-foreground hover:text-accent transition-colors">
-                Terms of Service
-              </a>
-              <a href="#contact" className="text-muted-foreground hover:text-accent transition-colors">
-                Contact & Support
-              </a>
-            </div>
-
-            <div className="border-t border-border pt-8 text-center text-xs text-muted-foreground">
-              <p>© 2024 Premium Digital Resources. All rights reserved. Built with integrity and transparency.</p>
-            </div>
+      <footer className="w-full py-12 px-6 border-t border-border bg-background">
+        <div className="mx-auto max-w-4xl flex flex-col sm:flex-row justify-between items-center gap-6">
+          <p className="text-sm text-muted-foreground">© 2026 Elite Strategies. All rights reserved.</p>
+          <div className="flex gap-6">
+            <a href="privacy.html" className="text-sm text-muted-foreground hover:text-accent">Privacy Policy</a>
+            <a href="terms.html" className="text-sm text-muted-foreground hover:text-accent">Terms of Service</a>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }

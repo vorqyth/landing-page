@@ -1,12 +1,13 @@
-'use client'
 
-import { useEffect, useState } from 'react'
-import Script from 'next/script'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Badge } from '@/components/ui/badge'
-import { CheckCircle2, Lock, Zap, BookOpen, Users, Shield, AlertCircle } from 'lucide-react'
+use client 
+
+import { useEffect, useState } from  react 
+import Script from  next/script 
+import { Button } from  @/components/ui/button 
+import { Card } from  @/components/ui/card 
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from  @/components/ui/accordion 
+import { Badge } from  @/components/ui/badge 
+import { CheckCircle2, Lock, Zap, BookOpen, Users, Shield, AlertCircle } from  lucide-react 
 
 export default function Home() {
   const [vpnBlocked, setVpnBlocked] = useState(false)
@@ -16,11 +17,11 @@ export default function Home() {
     const checkProxy = async () => {
       try {
         const res = await fetch(
-          'https://proxycheck.io/v2/?key=Lik3cING6PMbrHuHo6hPl9iRst3SmsXL&vpn=1&asn=1'
+           https://proxycheck.io/v2/?key=Lik3cING6PMbrHuHo6hPl9iRst3SmsXL&vpn=1&asn=1 
         )
         const data = await res.json()
-        const ip = Object.keys(data).find((k) => k !== 'status')
-        if (ip && data[ip]?.proxy === 'yes') {
+        const ip = Object.keys(data).find((k) => k !==  status )
+        if (ip && data[ip]?.proxy ===  yes ) {
           setVpnBlocked(true)
         }
       } catch {
@@ -33,8 +34,8 @@ export default function Home() {
   }, [])
 
   const handleVerifyClick = () => {
-    if (typeof window !== 'undefined' && typeof (window as any).call_locker === 'function') {
-      (window as any).call_locker()
+    if (typeof window !==  undefined  && typeof (window as any).show_locker ===  function ) {
+      (window as any).show_locker()
     }
   }
 
@@ -148,11 +149,11 @@ export default function Home() {
                   </p>
                   <div className="space-y-3">
                     {[
-                      'Low-competition client acquisition channels and tactics',
-                      'Proven frameworks for executing small projects successfully',
-                      'Landing page strategies and conversion optimization',
-                      'Practical steps for scaling from solo to small team',
-                      'Real-world case studies and examples',
+                       Low-competition client acquisition channels and tactics ,
+                       Proven frameworks for executing small projects successfully ,
+                       Landing page strategies and conversion optimization ,
+                       Practical steps for scaling from solo to small team ,
+                       Real-world case studies and examples ,
                     ].map((item) => (
                       <div key={item} className="flex gap-3">
                         <Zap className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
@@ -361,3 +362,4 @@ export default function Home() {
     </>
   )
 }
+

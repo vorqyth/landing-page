@@ -15,12 +15,9 @@ export default function Home() {
   useEffect(() => {
     const checkProxy = async () => {
       try {
-        const res = await fetch(
-          'https://proxycheck.io/v2/?key=Lik3cING6PMbrHuHo6hPl9iRst3SmsXL&vpn=1&asn=1'
-        )
+        const res = await fetch('https://vpn-check.vorqyth.workers.dev')
         const data = await res.json()
-        const ip = Object.keys(data).find((k) => k !== 'status')
-        if (ip && data[ip]?.proxy === 'yes') {
+        if (data.blocked === true) {
           setVpnBlocked(true)
         }
       } catch {
